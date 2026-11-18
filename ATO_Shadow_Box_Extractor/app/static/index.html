@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1829" />
+  <title>ATO Studio — Shadow Box Extractor</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brandmark">A<span>TO</span></div><div><strong>ATO Studio</strong><small>SHADOW BOX EXTRACTOR</small></div></div>
+    <div class="topright"><span class="dot"></span> Guided Production Studio <span class="version">v1.0</span></div>
+  </header>
+  <main>
+    <section class="intro">
+      <div><div class="eyebrow">PRODUCTION WORKSPACE / 001</div><h1>Extract once. <em>Make anything.</em></h1><p>Turn a Shadow Box photo into separate printable background artwork and CAD-ready logo contours.</p></div>
+      <div class="featureline"><span>01 <b>RECTIFY</b></span><span>02 <b>ISOLATE</b></span><span>03 <b>EXPORT</b></span></div>
+    </section>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="panel">
+          <h2><span class="step">1</span> Source image</h2>
+          <label class="drop" id="dropZone" for="fileInput"><span class="uploadicon">⬆</span><strong>Choose a product photo</strong><small>JPG, PNG, WebP · max 18 MB / 20 MP</small><input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" hidden /></label>
+          <div id="sourceInfo" class="hint">Upload a clear image. Avoid reflections where possible.</div>
+        </div>
+        <div class="panel">
+          <h2><span class="step">2</span> Select & refine</h2>
+          <p class="small">Verify all 4 corners are on the <strong>inside edge of the printed artwork</strong> (not the frame).</p>
+          <div class="tools">
+            <button type="button" data-tool="corners" class="tool active">◈ Corners</button>
+            <button type="button" data-tool="roi" class="tool">▣ Auto Select ROI</button>
+            <button type="button" data-tool="mask-add" class="tool">✎ Paint Logo</button>
+            <button type="button" data-tool="mask-erase" class="tool">⌫ Erase Logo</button>
+            <button type="button" data-tool="engrave-add" class="tool">✧ Engrave</button>
+            <button type="button" data-tool="engrave-erase" class="tool">⌫ Erase Engrave</button>
+          </div>
+          <label class="field">Brush size <output id="brushValue">24 px</output><input id="brush" type="range" min="3" max="120" value="24" /></label>
+          <div class="actionrow"><button id="detectCorners" class="muted" type="button">Detect corners</button><button id="undo" class="muted" type="button">Undo brush</button><button id="clearMask" class="muted" type="button">Clear masks</button></div>
+          <p class="tip"><span class="tag gold">Gold</span> logo mask · <span class="tag teal">Teal</span> engraving · Auto Select uses a rectangle and needs manual review.</p>
+        </div>
+        <div class="panel">
+          <h2><span class="step">3</span> Production dimensions</h2>
+          <label class="field"><span>Measured artwork width (mm) <span class="required">*</span></span><input id="widthMM" type="number" min="20" max="2500" step="0.1" placeholder="e.g. 240" /></label>
+          <div class="duofields"><label class="field">Print resolution <select id="dpi"><option value="300">300 DPI</option><option value="150">150 DPI</option><option value="600">600 DPI</option></select></label><label class="field">Inpainting radius <input id="radius" type="number" min="2" max="20" value="5" /></label></div>
+          <details class="advanced"><summary>Advanced vector options</summary><div class="duofields"><label class="field">Contour tolerance px<input id="simplify" type="number" min="0.1" max="5" value="0.8" step="0.1" /></label><label class="field">Min. shape area px²<input id="minArea" type="number" min="0" max="300" value="6" step="1" /></label></div></details>
+          <label class="field">Private site access key (if configured)<input id="accessKey" type="password" autocomplete="off" placeholder="Optional for local development" /></label>
+          <button type="button" id="run" class="primary" disabled><span>Generate production files</span><span>➜</span></button>
+          <div class="hint">No dimensions are inferred from a photo. Drawing units in DXF come from your measured artwork width.</div>
+        </div>
+      </aside>
+      <section class="workspace">
+        <div class="panel stage-panel">
+          <div class="stagehead"><div><h2>Artwork editor</h2><p>Drag corner points or paint on the raised logo</p></div><div id="toolLabel" class="tool-label">CORNERS MODE</div></div>
+          <div id="stage" class="stage empty"><div id="emptyState" class="empty-state"><div class="symbol">▧</div><h3>Your image canvas</h3><p>Upload a Shadow Box image to begin.</p></div><canvas id="base" aria-label="Uploaded image"></canvas><canvas id="overlay" aria-label="Editable mask and four perspective corners"></canvas></div>
+          <div class="stagefoot"><span id="canvasInfo">No photo loaded</span><span>Corner order: TL • TR • BR • BL</span></div>
+        </div>
+        <div id="alert" class="notice" role="status">Use the <strong>Paint Logo</strong> brush to select every raised piece. Holes can be carved using <strong>Erase Logo</strong>.</div>
+        <div id="output" class="panel output" hidden>
+          <div class="stagehead"><div><h2>Ready for review</h2><p>Inspect reconstructed art and vector geometry before manufacturing.</p></div><span class="ready">EXPORT COMPLETE</span></div>
+          <div class="previews"><figure><div class="preview-frame"><img id="previewBG" alt="Extracted flat background artwork" /></div><figcaption>Background.png · printable artwork</figcaption></figure><figure><div class="preview-frame white"><img id="previewSVG" alt="Extracted vector logo preview" /></div><figcaption>Logo.svg · vector preview</figcaption></figure></div>
+          <div class="exports"><a id="fileBG" download="Background.png">Download PNG</a><a id="fileDXF" download="Logo.dxf">Download DXF</a><a id="fileSVG" download="Logo.svg">Download SVG</a><a id="fileZIP" download="ATO_Exports.zip" class="full">↓ Download all as ZIP</a></div>
+          <div id="report" class="report"></div>
+        </div>
+      </section>
+    </div>
+    <footer>ATO STUDIO — GUIDED CV MVP <span>Production checks required before printing, laser cutting, or extrusion.</span></footer>
+  </main>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

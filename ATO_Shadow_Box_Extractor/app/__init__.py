@@ -1,0 +1,1 @@
+"""ATO Shadow Box Extractor."""

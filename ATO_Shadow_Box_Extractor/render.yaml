@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ato-shadow-box-extractor
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: ATO_ACCESS_KEY
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: '1'
